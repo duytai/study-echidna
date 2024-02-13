@@ -1,0 +1,156 @@
+/home/tai/Downloads/ok/contract.sol
+   1 |     | /**
+   2 |     |  *Submitted for verification at Etherscan.io on 2019-02-19
+   3 |     | */
+   4 |     | 
+   5 |     | pragma solidity ^0.4.24;
+   6 |     | 
+   7 |     | /*
+   8 |     |  
+   9 |     |  Suicide Watch
+  10 |     | 
+  11 |     |  I have been recently contemplating suicide.   I have the aparatus
+  12 |     |  all set to go.  
+  13 |     |  
+  14 |     |  I have been chewed up and shit out by the crypto world and life in general.
+  15 |     | 
+  16 |     |  Here is what may be a final dApp.   You can post a string of whatever
+  17 |     |  you want to say.   Encourage me do do it or to stay alive.
+  18 |     | 
+  19 |     |  And you can make money doing it.   The right to post a message has a price.
+  20 |     | 
+  21 |     |  The price goes up 25% each time.   We will start at 0.01 ETH.
+  22 |     | 
+  23 |     |  I will keep half of the gain and the previous author will keep half plus his 
+  24 |     |  initial investment.
+  25 |     | 
+  26 |     |  Your earnings will go right to your wallet.
+  27 |     | 
+  28 |     | I will have to manually withdraw my earnings.  So if you see me stop withdrawing, you'll
+  29 |     | know what happened.
+  30 |     | 
+  31 |     |  https://suicidewatch.tk
+  32 |     |                                                  
+  33 |     | */
+  34 |     | 
+  35 |     | 
+  36 | *o  | contract suicidewatch {
+  37 |     | 
+  38 |     |     event stillKicking(
+  39 |     |         uint amount
+  40 |     |     );
+  41 |     | 
+  42 |     |     address lastAuthor;    
+  43 |     | 
+  44 | *   |     uint public price = 0.01 ether;
+  45 |     |     uint prevPrice = 0;
+  46 |     |     uint increase = 25;  //25%
+  47 |     | 
+  48 |     |     mapping (uint => string) messages;
+  49 |     | 
+  50 | *   |     uint public messageCount = 0;
+  51 |     |     
+  52 |     | 
+  53 | *   |     uint public ownerAccount = 0;
+  54 |     |  
+  55 | *   |     string public storage_;
+  56 |     | 
+  57 |     |     address owner;
+  58 |     |     
+  59 |     |     constructor() public {
+  60 |     |         owner = msg.sender;
+  61 |     |         lastAuthor = owner;
+  62 |     |         storage_ = "YOUR MESSAGE GOES HERE";
+  63 |     |     }
+  64 |     | 
+  65 | *   |     function buyMessage(string s) public payable
+  66 |     |     {
+  67 |     | 
+  68 | *r  |         require(msg.value >= price);
+  69 | *   |         uint ownerFee;
+  70 | *   |         uint authorFee;
+  71 | *   |         uint priceGain;
+  72 |     |         
+  73 | *   |         if (price > 0.01 ether) {
+  74 | *   |             priceGain = SafeMath.sub(price, prevPrice);
+  75 | *   |             ownerFee = SafeMath.div(SafeMath.mul(priceGain,50),100);
+  76 | *   |             authorFee = ownerFee;
+  77 |     |         } else {
+  78 | *   |             priceGain = SafeMath.sub(price, prevPrice);
+  79 | *   |             ownerFee = priceGain;
+  80 | *   |             authorFee = 0;
+  81 |     |         }
+  82 |     | 
+  83 | *   |         ownerAccount = SafeMath.add(ownerAccount, ownerFee);
+  84 |     |        
+  85 |     | 
+  86 | *   |         if (price > 0.01 ether){
+  87 | *   |             lastAuthor.transfer(authorFee + prevPrice);
+  88 |     |         }
+  89 |     | 
+  90 | *   |         prevPrice = price;
+  91 |     |         
+  92 | *   |         price = SafeMath.div(SafeMath.mul(125,price),100);
+  93 |     | 
+  94 | *   |         lastAuthor = msg.sender;
+  95 |     |         
+  96 | *   |         store_message(s);
+  97 |     | 
+  98 | *   |         messages[messageCount] = s;
+  99 | *   |         messageCount += 1;
+ 100 |     |         
+ 101 |     |     }
+ 102 |     | 
+ 103 | *   |     function store_message(string s) internal {
+ 104 |     | 
+ 105 | *   |         storage_ = s;
+ 106 |     |     }
+ 107 |     | 
+ 108 | *   |     function ownerWithdraw() 
+ 109 |     |     {
+ 110 | *r  |         require(msg.sender == owner);
+ 111 | *   |         uint tempAmount = ownerAccount;
+ 112 | *   |         ownerAccount = 0;
+ 113 | *   |         owner.transfer(tempAmount);
+ 114 | *   |         assert(tempAmount >= 0);
+ 115 | *   |         emit stillKicking(tempAmount);
+ 116 |     |     }
+ 117 |     | 
+ 118 | *   |     function getMessages(uint messageNum) view public returns(string)
+ 119 |     | 
+ 120 |     |     {
+ 121 | *   |         return(messages[messageNum]);
+ 122 |     |     }
+ 123 |     | }
+ 124 |     | 
+ 125 |     | /**
+ 126 |     |  * @title SafeMath
+ 127 |     |  * @dev Math operations with safety checks that throw on error
+ 128 |     |  */
+ 129 |     | library SafeMath {
+ 130 | *   |   function mul(uint256 a, uint256 b) internal constant returns (uint256) {
+ 131 | *   |     uint256 c = a * b;
+ 132 | *   |     assert(a == 0 || c / a == b);
+ 133 | *   |     return c;
+ 134 |     |   }
+ 135 |     |  
+ 136 | *   |   function div(uint256 a, uint256 b) internal constant returns (uint256) {
+ 137 |     |     // assert(b > 0); // Solidity automatically throws when dividing by 0
+ 138 | *   |     uint256 c = a / b;
+ 139 |     |     // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+ 140 | *   |     return c;
+ 141 |     |   }
+ 142 |     |  
+ 143 | *   |   function sub(uint256 a, uint256 b) internal constant returns (uint256) {
+ 144 | *   |     assert(b <= a);
+ 145 | *   |     return a - b;
+ 146 |     |   }
+ 147 |     |  
+ 148 | *   |   function add(uint256 a, uint256 b) internal constant returns (uint256) {
+ 149 | *   |     uint256 c = a + b;
+ 150 | *   |     assert(c >= a);
+ 151 | *   |     return c;
+ 152 |     |   }
+ 153 |     | }
+ 154 |     | 
+

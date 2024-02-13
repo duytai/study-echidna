@@ -1,0 +1,160 @@
+<style> code { white-space: pre-wrap; display: block; background-color: #eee; }.executed { background-color: #afa; }.reverted { background-color: #ffa; }.unexecuted { background-color: #faa; }.neutral { background-color: #eee; }</style><b>/home/tai/Downloads/ok/contract.sol</b>
+<code>
+   1 |     | <span class='neutral'>/**</span>
+   2 |     | <span class='neutral'> *Submitted for verification at Etherscan.io on 2019-02-19</span>
+   3 |     | <span class='neutral'>*/</span>
+   4 |     | <span class='neutral'></span>
+   5 |     | <span class='neutral'>pragma solidity ^0.4.24;</span>
+   6 |     | <span class='neutral'></span>
+   7 |     | <span class='neutral'>/*</span>
+   8 |     | <span class='neutral'> </span>
+   9 |     | <span class='neutral'> Suicide Watch</span>
+  10 |     | <span class='neutral'></span>
+  11 |     | <span class='neutral'> I have been recently contemplating suicide.   I have the aparatus</span>
+  12 |     | <span class='neutral'> all set to go.  </span>
+  13 |     | <span class='neutral'> </span>
+  14 |     | <span class='neutral'> I have been chewed up and shit out by the crypto world and life in general.</span>
+  15 |     | <span class='neutral'></span>
+  16 |     | <span class='neutral'> Here is what may be a final dApp.   You can post a string of whatever</span>
+  17 |     | <span class='neutral'> you want to say.   Encourage me do do it or to stay alive.</span>
+  18 |     | <span class='neutral'></span>
+  19 |     | <span class='neutral'> And you can make money doing it.   The right to post a message has a price.</span>
+  20 |     | <span class='neutral'></span>
+  21 |     | <span class='neutral'> The price goes up 25% each time.   We will start at 0.01 ETH.</span>
+  22 |     | <span class='neutral'></span>
+  23 |     | <span class='neutral'> I will keep half of the gain and the previous author will keep half plus his </span>
+  24 |     | <span class='neutral'> initial investment.</span>
+  25 |     | <span class='neutral'></span>
+  26 |     | <span class='neutral'> Your earnings will go right to your wallet.</span>
+  27 |     | <span class='neutral'></span>
+  28 |     | <span class='neutral'>I will have to manually withdraw my earnings.  So if you see me stop withdrawing, you&#39;ll</span>
+  29 |     | <span class='neutral'>know what happened.</span>
+  30 |     | <span class='neutral'></span>
+  31 |     | <span class='neutral'> https://suicidewatch.tk</span>
+  32 |     | <span class='neutral'>                                                 </span>
+  33 |     | <span class='neutral'>*/</span>
+  34 |     | <span class='neutral'></span>
+  35 |     | <span class='neutral'></span>
+  36 | *o  | <span class='executed'>contract suicidewatch {</span>
+  37 |     | <span class='neutral'></span>
+  38 |     | <span class='neutral'>    event stillKicking(</span>
+  39 |     | <span class='neutral'>        uint amount</span>
+  40 |     | <span class='neutral'>    );</span>
+  41 |     | <span class='neutral'></span>
+  42 |     | <span class='neutral'>    address lastAuthor;    </span>
+  43 |     | <span class='neutral'></span>
+  44 | *   | <span class='executed'>    uint public price = 0.01 ether;</span>
+  45 |     | <span class='unexecuted'>    uint prevPrice = 0;</span>
+  46 |     | <span class='unexecuted'>    uint increase = 25;  //25%</span>
+  47 |     | <span class='neutral'></span>
+  48 |     | <span class='neutral'>    mapping (uint =&gt; string) messages;</span>
+  49 |     | <span class='neutral'></span>
+  50 | *   | <span class='executed'>    uint public messageCount = 0;</span>
+  51 |     | <span class='neutral'>    </span>
+  52 |     | <span class='neutral'></span>
+  53 | *   | <span class='executed'>    uint public ownerAccount = 0;</span>
+  54 |     | <span class='neutral'> </span>
+  55 | *   | <span class='executed'>    string public storage_;</span>
+  56 |     | <span class='neutral'></span>
+  57 |     | <span class='neutral'>    address owner;</span>
+  58 |     | <span class='neutral'>    </span>
+  59 |     | <span class='unexecuted'>    constructor() public {</span>
+  60 |     | <span class='unexecuted'>        owner = msg.sender;</span>
+  61 |     | <span class='unexecuted'>        lastAuthor = owner;</span>
+  62 |     | <span class='unexecuted'>        storage_ = &quot;YOUR MESSAGE GOES HERE&quot;;</span>
+  63 |     | <span class='neutral'>    }</span>
+  64 |     | <span class='neutral'></span>
+  65 | *   | <span class='executed'>    function buyMessage(string s) public payable</span>
+  66 |     | <span class='neutral'>    {</span>
+  67 |     | <span class='neutral'></span>
+  68 | *r  | <span class='executed'>        require(msg.value &gt;= price);</span>
+  69 | *   | <span class='executed'>        uint ownerFee;</span>
+  70 | *   | <span class='executed'>        uint authorFee;</span>
+  71 | *   | <span class='executed'>        uint priceGain;</span>
+  72 |     | <span class='neutral'>        </span>
+  73 | *   | <span class='executed'>        if (price &gt; 0.01 ether) {</span>
+  74 | *   | <span class='executed'>            priceGain = SafeMath.sub(price, prevPrice);</span>
+  75 | *   | <span class='executed'>            ownerFee = SafeMath.div(SafeMath.mul(priceGain,50),100);</span>
+  76 | *   | <span class='executed'>            authorFee = ownerFee;</span>
+  77 |     | <span class='neutral'>        } else {</span>
+  78 | *   | <span class='executed'>            priceGain = SafeMath.sub(price, prevPrice);</span>
+  79 | *   | <span class='executed'>            ownerFee = priceGain;</span>
+  80 | *   | <span class='executed'>            authorFee = 0;</span>
+  81 |     | <span class='neutral'>        }</span>
+  82 |     | <span class='neutral'></span>
+  83 | *   | <span class='executed'>        ownerAccount = SafeMath.add(ownerAccount, ownerFee);</span>
+  84 |     | <span class='neutral'>       </span>
+  85 |     | <span class='neutral'></span>
+  86 | *   | <span class='executed'>        if (price &gt; 0.01 ether){</span>
+  87 | *   | <span class='executed'>            lastAuthor.transfer(authorFee + prevPrice);</span>
+  88 |     | <span class='neutral'>        }</span>
+  89 |     | <span class='neutral'></span>
+  90 | *   | <span class='executed'>        prevPrice = price;</span>
+  91 |     | <span class='neutral'>        </span>
+  92 | *   | <span class='executed'>        price = SafeMath.div(SafeMath.mul(125,price),100);</span>
+  93 |     | <span class='neutral'></span>
+  94 | *   | <span class='executed'>        lastAuthor = msg.sender;</span>
+  95 |     | <span class='neutral'>        </span>
+  96 | *   | <span class='executed'>        store_message(s);</span>
+  97 |     | <span class='neutral'></span>
+  98 | *   | <span class='executed'>        messages[messageCount] = s;</span>
+  99 | *   | <span class='executed'>        messageCount += 1;</span>
+ 100 |     | <span class='neutral'>        </span>
+ 101 |     | <span class='neutral'>    }</span>
+ 102 |     | <span class='neutral'></span>
+ 103 | *   | <span class='executed'>    function store_message(string s) internal {</span>
+ 104 |     | <span class='neutral'></span>
+ 105 | *   | <span class='executed'>        storage_ = s;</span>
+ 106 |     | <span class='neutral'>    }</span>
+ 107 |     | <span class='neutral'></span>
+ 108 | *   | <span class='executed'>    function ownerWithdraw() </span>
+ 109 |     | <span class='neutral'>    {</span>
+ 110 | *r  | <span class='executed'>        require(msg.sender == owner);</span>
+ 111 | *   | <span class='executed'>        uint tempAmount = ownerAccount;</span>
+ 112 | *   | <span class='executed'>        ownerAccount = 0;</span>
+ 113 | *   | <span class='executed'>        owner.transfer(tempAmount);</span>
+ 114 | *   | <span class='executed'>        assert(tempAmount &gt;= 0);</span>
+ 115 | *   | <span class='executed'>        emit stillKicking(tempAmount);</span>
+ 116 |     | <span class='neutral'>    }</span>
+ 117 |     | <span class='neutral'></span>
+ 118 | *   | <span class='executed'>    function getMessages(uint messageNum) view public returns(string)</span>
+ 119 |     | <span class='neutral'></span>
+ 120 |     | <span class='neutral'>    {</span>
+ 121 | *   | <span class='executed'>        return(messages[messageNum]);</span>
+ 122 |     | <span class='neutral'>    }</span>
+ 123 |     | <span class='neutral'>}</span>
+ 124 |     | <span class='neutral'></span>
+ 125 |     | <span class='neutral'>/**</span>
+ 126 |     | <span class='neutral'> * @title SafeMath</span>
+ 127 |     | <span class='neutral'> * @dev Math operations with safety checks that throw on error</span>
+ 128 |     | <span class='neutral'> */</span>
+ 129 |     | <span class='unexecuted'>library SafeMath {</span>
+ 130 | *   | <span class='executed'>  function mul(uint256 a, uint256 b) internal constant returns (uint256) {</span>
+ 131 | *   | <span class='executed'>    uint256 c = a * b;</span>
+ 132 | *   | <span class='executed'>    assert(a == 0 || c / a == b);</span>
+ 133 | *   | <span class='executed'>    return c;</span>
+ 134 |     | <span class='neutral'>  }</span>
+ 135 |     | <span class='neutral'> </span>
+ 136 | *   | <span class='executed'>  function div(uint256 a, uint256 b) internal constant returns (uint256) {</span>
+ 137 |     | <span class='neutral'>    // assert(b &gt; 0); // Solidity automatically throws when dividing by 0</span>
+ 138 | *   | <span class='executed'>    uint256 c = a / b;</span>
+ 139 |     | <span class='neutral'>    // assert(a == b * c + a % b); // There is no case in which this doesn&#39;t hold</span>
+ 140 | *   | <span class='executed'>    return c;</span>
+ 141 |     | <span class='neutral'>  }</span>
+ 142 |     | <span class='neutral'> </span>
+ 143 | *   | <span class='executed'>  function sub(uint256 a, uint256 b) internal constant returns (uint256) {</span>
+ 144 | *   | <span class='executed'>    assert(b &lt;= a);</span>
+ 145 | *   | <span class='executed'>    return a - b;</span>
+ 146 |     | <span class='neutral'>  }</span>
+ 147 |     | <span class='neutral'> </span>
+ 148 | *   | <span class='executed'>  function add(uint256 a, uint256 b) internal constant returns (uint256) {</span>
+ 149 | *   | <span class='executed'>    uint256 c = a + b;</span>
+ 150 | *   | <span class='executed'>    assert(c &gt;= a);</span>
+ 151 | *   | <span class='executed'>    return c;</span>
+ 152 |     | <span class='neutral'>  }</span>
+ 153 |     | <span class='neutral'>}</span>
+ 154 |     | <span class='neutral'></span>
+
+</code>
+<br />
+
